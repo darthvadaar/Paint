@@ -1,7 +1,6 @@
 #Sherlock Paint - Sid Bedekar
-#play/pause icons - remove third button or use it
-#fix painting after load
-
+#This paint program allows to user to use basic and some advanced tools to create artwork. Basic tools include: pencil, eraser, brush.
+#Additional capabilities such as music are also available.
 from pygame import *
 from random import *
 from math import *
@@ -60,8 +59,10 @@ music_control = []
 for x in range (1100,1136,35):
     music_control.append(draw.rect(screen,(255,255,255),(x,735,30,30)))
 
+#fill list
 fill_list = []
-#text tool
+
+#text tool vars
 typing = False
 typing_text = ""
 
@@ -72,7 +73,7 @@ stampnum = 0    #stamp number from the lists
 stamp_x = [30,29,44,47,69,31,25,54] #locations of stamps (to get stamps in the center of the mouse while blitting)
 stamp_y = [100,100,100,100,100,100,19,125]
 
-#background stuff
+#background vars
 back = [image.load("background1.png"),image.load("background2.jpg"),image.load("background3.jpg"),image.load("background4.jpg"),image.load("background5.png")]
 backnum = 0
 back_box = []
@@ -88,10 +89,6 @@ tab_status = 0
 tabnum = 0
 for i in range(100,170,35):
     tab_list.append(draw.rect(screen,(255,255,255),(155,i,30,30)))
-
-#alpha brush:
-alpha = Surface((width+100,width+100),SRCALPHA)
-
 
 running = True
 while running :
@@ -214,9 +211,9 @@ while running :
     canvas_mpos = (canvas_mx,canvas_my)
     stamp = stamplist[stampnum]
     texttool_font = font.SysFont("kaiti", width)
-    print(tool)
-
-    screen.blit(music_control_icons[0],(1100,735))  # control icon blit
+    
+    
+    screen.blit(music_control_icons[0],(1100,735))  # music control icon blit
     screen.blit(music_control_icons[1],(1136,735))
    
     for boxx in range (20,140,70):                                          #tool boxes draw
@@ -231,16 +228,16 @@ while running :
         desc3 = ["your investigations."," ","morphology.","","Right click for unfilled.","Right click for unfilled.","","colour.","your mouse.",""]
         desc4 = ["","","","","Middle click for square.","Middle click for circle.","","","","",""]
     elif tab_status == 1:
-        toollist = ["text","alpha","2:","3:","4:","5:","6:","7:","8:","9:"]
-        desctitle = ["Text Tool:","Alpha Brush:","brush","line","square","circle","fill","spray","colpicker","stamp"]    #Tools description tab 2
-        desc1 = ["Use if your hand writing" , "Erase incorrect" , "Paint clues to" , "Draw straight lines." , "Draw rectangles. Left" , "Draw Ellipse. Left" , "Fill an area with" , "Draw a spraypaint","Left click to equip the","Stamp images. Scroll"]
-        desc2 = ["is disgusting. Left click","deductions.","understand their","","click for filled and","click for filled and","the selected colour.","effect with the chosen","colour which is under ","to change image."]
-        desc3 = ["to start typing"," ","morphology.","","Right click for unfilled.","Right click for unfilled.","","colour.","your mouse.",""]
-        desc4 = ["and enter to stop.","","","","Middle click for square.","Middle click for circle.","","","","",""]
+        toollist = ["text","","","","","","","","",""]
+        desctitle = ["Text Tool:","","","","","","","","",""]    #Tools description tab 2
+        desc1 = ["Use if your hand writing" , "" , "" , "" , "" , "" , "" , "","",""]
+        desc2 = ["is disgusting. Left click","","","","","","",""," ",""]
+        desc3 = ["to start typing"," ","","","","","","","",""]
+        desc4 = ["and enter to stop.","","","","","","","","","",""]
             
     draw.rect(screen,(255,255,255),(20,450,165,100),0)                      #Description text Box Draw
     for i in range (0,10): 
-        if toolboxpos[i].collidepoint(mpos):                                #Prints text in description box if hovering over a tool
+        if tool == toollist[i] or toolboxpos[i].collidepoint(mpos):          #Prints text in description box if hovering over a tool
             screen.blit(desc_font.render(desctitle[i], True, (255,0,0)),(25,455))
             screen.blit(desc_font.render(desc1[i], True, (255,0,0)),(25,470))
             screen.blit(desc_font.render(desc2[i], True, (255,0,0)),(25,485))
@@ -341,8 +338,7 @@ while running :
     if len(undo_list) > 150:     #if more than 150 screens in list, removes the fist item in the list (for undo and redo, to prevent lagging or crash.)
         del[undo_list[0]]
     if len(redo_list) > 150:
-        del[redo_list[0]]
-                          
+        del[redo_list[0]]           
 
 #------------------------------Tool Selection--------------------------------#
 
@@ -350,15 +346,18 @@ while running :
         typing_text_pic = texttool_font.render(typing_text, True, (col))
         canvas.blit(canvas_text,(0,0))
         canvas.blit(typing_text_pic,text_pos)
-        
+
+    mouse.set_visible(True)
     if canvasrect.collidepoint(mpos):
         if tool == "pencil" and mb[0] == 1:                         # Pencil
+            mouse.set_visible(False)
             oldpos.append(canvas_mpos)
             if len(oldpos) > 2:         #two points stored and connected
                 del oldpos[0]           #no more than 2 points at a time
             draw.line(canvas,(col),(oldpos[0]),(canvas_mpos),1)
         
         elif tool == "eraser" and mb[0] == 1:                       # Eraser
+            mouse.set_visible(False)
             oldpos.append(canvas_mpos)
             if len(oldpos) > 2:
                 del oldpos[0]
@@ -366,6 +365,7 @@ while running :
                 draw.circle(canvas,(255,255,255),(canvas_mpos),int(width/2))
                 
         elif tool == "brush" and mb[0] == 1:                        # Brush
+            mouse.set_visible(False)
             oldpos.append(canvas_mpos)
             draw.circle(canvas,col,(oldpos[0]),int((width/2) - 1))
             if len(oldpos) > 2:
@@ -374,6 +374,7 @@ while running :
 
         elif tool == "line":                                        #Line Tool
             if mb[0] == 1:
+                mouse.set_visible(False)
                 canvas.blit(canvascopy,(0,0))
                 draw.circle(canvas,(col),(shape_oldx,shape_oldy),int((width/2) - 1)) #Gets rid of rough edges
                 draw.circle(canvas,(col),(canvas_mpos),int((width/2) - 1))                 #Gets rid of rough edges
@@ -381,12 +382,15 @@ while running :
                                     
         elif tool == "square":                                      #Square Tool
             if mb[0] == 1:  #left click = filled rectangle
+                mouse.set_visible(False)
                 canvas.blit(canvascopy,(0,0)) 
                 draw.rect(canvas,col,(shape_oldx, shape_oldy, canvas_mx - shape_oldx, canvas_my - shape_oldy),0)
             elif mb[1] == 1:
+                mouse.set_visible(False)
                 canvas.blit(canvascopy,(0,0))   #middle click = square
                 draw.rect(canvas,col,(shape_oldx, shape_oldy, canvas_mx - shape_oldx, canvas_mx - shape_oldx),0)
             elif mb[2] == 1:    #right click = unfilled rectangle
+                mouse.set_visible(False)
                 canvas.blit(canvascopy,(0,0))
                 draw.rect(canvas,col,(shape_oldx, shape_oldy, canvas_mx - shape_oldx, canvas_my - shape_oldy),width)
 
@@ -395,15 +399,17 @@ while running :
             circle_y = canvas_my - shape_oldy
             ellipserect = Rect(canvas_mx, canvas_my,  shape_oldx - canvas_mx,  shape_oldy - canvas_my)
             ellipserect.normalize()
-            if mb[0] == 1 :  #left click = filled ellipse    
+            if mb[0] == 1 :  #left click = filled ellipse
+                mouse.set_visible(False)
                 canvas.blit(canvascopy,(0,0))
                 draw.ellipse(canvas,col,ellipserect,0)
             elif mb[1] == 1:    #middle click = circle
+                mouse.set_visible(False)
                 dist = int(sqrt(abs((shape_oldx - canvas_mx)**2 + (shape_oldy - canvas_my)**2)))
                 canvas.blit(canvascopy,(0,0))
                 draw.circle(canvas , col , (shape_oldx , shape_oldy) , dist)
-                
             elif mb[2] == 1:    #right click = unfilled ellipse
+                mouse.set_visible(False)
                 elip_x = ellipserect.width // 2
                 elip_y = ellipserect.height // 2
                 if elip_x > width and elip_y > width:
@@ -414,10 +420,12 @@ while running :
                     draw.ellipse(canvas,col,ellipserect)       
             
         elif tool == "colpicker" and mb[0] == 1:
+            mouse.set_visible(False)
             col = screen.get_at((mpos))                             #colour picker
                          
         elif tool == "spray" and mb[0] == 1:                         #Spray
             for i in range(10): #spray_tool_variables
+                mouse.set_visible(False)
                 rangex = randint(canvas_mx - width,canvas_mx + width) #Gets a range for x values
                 rangey = randint(canvas_my-width,canvas_my + width) #Gets a range for y values
                 dist_spray = sqrt(abs((canvas_mx-rangex)**2 + (canvas_my-rangey)**2))   #Gets distance (dist_spray from mpos to width of circle)
@@ -425,20 +433,13 @@ while running :
                     canvas.set_at((rangex,rangey),col)
 
         elif tool == "stamp" and mb[0] == 1:                        #Stamp tool
+            mouse.set_visible(False)
             canvas.blit(canvascopy,(0,0))
             canvas.blit(stamp,(canvas_mx - stamp_x[stampnum], canvas_my - stamp_y[stampnum]))
-
-        elif tool == "alpha" and mb[0] == 1:
-            oldpos.append(canvas_mpos)
-            draw.circle(alpha,col,(oldpos[0]),int((width/2) - 1))
-            draw.line(alpha,(col),(oldpos[0]),(canvas_mpos),width)
-            canvas.blit(alpha,(canvas_mx - 10, canvas_my-10))
-            if len(oldpos) > 2:
-                del oldpos[0]
             
-
         elif 1 not in mb:
-            oldpos = []    
+            oldpos = []
+            
     
 #_______________________________________
     display.flip()
