@@ -124,9 +124,9 @@ while running :
                 if e.key == K_BACKSPACE:  #remove last letter if backspace
                     saveload_input = saveload_input[:-1]
                 elif e.key == K_RETURN:
-                    if saveload_input.count(".png") == 0 or saveload_input.count(".jpg") == 0 or saveload_input.count(".jpeg") == 0 :
-                        saveload_input += ".png"    #if no extension, saves as png 
                     if control == "save":
+                        if saveload_input.count(".png") == 0 or saveload_input.count(".jpg") == 0 or saveload_input.count(".jpeg") == 0 :
+                            saveload_input += ".png"    #if no extension, saves as png 
                         image.save(canvas, saveload_input)  #saves if save is selected
                         control = "none"
                     elif control == "load":
@@ -172,7 +172,7 @@ while running :
                 canvas.set_clip(canvasrect)
                 startcol = canvas.get_at((canvas_mx,canvas_my))
                 fill_list.append((canvas_mx,canvas_my))
-                while (len(fill_list)) > 0:
+                while (len(fill_list)) > 0:     #list will be empty when filling is over
                     startx,starty = fill_list.pop(0)
                     if canvas.get_at((startx,starty)) == startcol:
                         canvas.set_at((startx,starty),col)
@@ -186,7 +186,7 @@ while running :
             if e.type == MOUSEBUTTONDOWN and e.button == 1 and canvasrect.collidepoint(mpos):
                 canvas_text = canvas.copy()
                 mx , my= mouse.get_pos()
-                text_pos = (mx-200, my - 100)
+                text_pos = (canvas_mpos)
                 typing = True
             if typing:
                 if e.type == KEYDOWN:
@@ -232,12 +232,12 @@ while running :
         desctitle = ["Text Tool:","","","","","","","","",""]    #Tools description tab 2
         desc1 = ["Use if your hand writing" , "" , "" , "" , "" , "" , "" , "","",""]
         desc2 = ["is disgusting. Left click","","","","","","",""," ",""]
-        desc3 = ["to start typing"," ","","","","","","","",""]
-        desc4 = ["and enter to stop.","","","","","","","","","",""]
+        desc3 = ["to start typing and"," ","","","","","","","",""]
+        desc4 = ["enter to stop.","","","","","","","","","",""]
             
     draw.rect(screen,(255,255,255),(20,450,165,100),0)                      #Description text Box Draw
     for i in range (0,10): 
-        if tool == toollist[i] or toolboxpos[i].collidepoint(mpos):          #Prints text in description box if hovering over a tool
+        if toolboxpos[i].collidepoint(mpos):          #Prints text in description box if hovering over a tool
             screen.blit(desc_font.render(desctitle[i], True, (255,0,0)),(25,455))
             screen.blit(desc_font.render(desc1[i], True, (255,0,0)),(25,470))
             screen.blit(desc_font.render(desc2[i], True, (255,0,0)),(25,485))
@@ -347,7 +347,7 @@ while running :
         canvas.blit(canvas_text,(0,0))
         canvas.blit(typing_text_pic,text_pos)
 
-    mouse.set_visible(True)
+    mouse.set_visible(True) #if tools not in use, show mouse
     if canvasrect.collidepoint(mpos):
         if tool == "pencil" and mb[0] == 1:                         # Pencil
             mouse.set_visible(False)
@@ -419,9 +419,9 @@ while running :
                     canvas.blit(canvascopy,(0,0))
                     draw.ellipse(canvas,col,ellipserect)       
             
-        elif tool == "colpicker" and mb[0] == 1:
+        elif tool == "colpicker" and mb[0] == 1:                    #colour picker
             mouse.set_visible(False)
-            col = screen.get_at((mpos))                             #colour picker
+            col = screen.get_at((mpos))                             
                          
         elif tool == "spray" and mb[0] == 1:                         #Spray
             for i in range(10): #spray_tool_variables
